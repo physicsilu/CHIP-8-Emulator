@@ -1,0 +1,173 @@
+Here I am going to emulate CHIP-8
+
+CHIP-8 is a virtual machine btw!
+
+What's a virtual machine?
+A virtual machine (VM) is a software-based simulation of a computer system. 
+It behaves like a physical computer but runs entirely as software, allowing you to execute programs as if they were running on real hardware.
+
+
+What are there in CHIP-8?
+-- 16 8 bit registers. Named V0 to VF. Each register can hold values from 0x00 to 0xFF. VF is the flag register.
+-- It has 4kB of RAM. So, 12 bits for addressing will be sufficient. Address space = 0x000 to 0xFFF.
+    0x000-0x1FF: Originally reserved for the CHIP-8 interpreter, but in our modern emulator we will just never write to or read from that area. (We'll see if this space can be used later)
+    0x050-0x0A0: Storage space for the 16 built-in characters (0 through F), which we will need to manually put into our memory because ROMs will be looking for those characters.
+    0x200-0xFFF: Instructions from the ROM will be stored starting at 0x200, and anything left after the ROM’s space is free to use.
+-- 16 bit Index Register. It is used for memory addressing. (Although 12 bit addressing is sufficient, hardware is built over 8 multiples)
+-- 16 bit Program Counter. The Program Counter (PC) is a special register that holds the address of the next instruction to execute. 
+    An instruction is two bytes but memory is addressed as a single byte, so when we fetch an instruction from memory we need to fetch a byte from PC and a byte from PC+1 and connect them into a single value.
+-- 16 level stack. 
+    When a subroutine is called, the current program counter (PC) is pushed onto the stack.
+    The program counter is then updated to the address specified by the instruction.
+    Example:
+    2ABC (Call subroutine at address 0xABC):
+    Push the current PC onto the stack.
+    Increment the SP to point to the next stack location.
+    Set the PC to 0xABC.
+-- 8 bit stack pointer. This is used to keep track of the 16 level stack.
+-- 8 bit delay timer.
+    The delay timer is an 8-bit register, meaning it can hold values from 0 to 255.
+    It is used to create timed delays for visual effects or sounds in a CHIP-8 program.
+    The timer is decremented at a rate of 60 Hz, meaning it decreases by 1 every 1/60th of a second.
+    When the delay timer is set to a value greater than 0, it will continue to count down until it reaches 0.
+    The delay timer can be set to control how long a certain action (like a sprite movement or sound effect) will take.
+-- 8 bit sound timer. It works similar to the delay timer.
+-- 16 input keys. 
+    Keypad       Keyboard
+    +-+-+-+-+    +-+-+-+-+
+    |1|2|3|C|    |1|2|3|4|
+    +-+-+-+-+    +-+-+-+-+
+    |4|5|6|D|    |Q|W|E|R|
+    +-+-+-+-+ => +-+-+-+-+
+    |7|8|9|E|    |A|S|D|F|
+    +-+-+-+-+    +-+-+-+-+
+    |A|0|B|F|    |Z|X|C|V|
+    +-+-+-+-+    +-+-+-+-+
+-- 64x32 Monochrome Display Memory.
+    The CHIP-8 has an additional memory buffer used for storing the graphics to display. It is 64 pixels wide and 32 pixels high. Each pixel is either on or off, so only two colors can be represented.
+    The draw instruction iterates over each pixel in a sprite and XORs the sprite pixel with the display pixel.
+    Sprite Pixel Off XOR Display Pixel Off = Display Pixel Off
+    Sprite Pixel Off XOR Display Pixel On = Display Pixel On
+    Sprite Pixel On XOR Display Pixel Off = Display Pixel On
+    Sprite Pixel On XOR Display Pixel On = Display Pixel Off
+
+
+*************** What is a macro? ***************
+A **macro** in C (and many other programming languages) is a **preprocessor directive** that defines a piece of code that can be inserted or replaced throughout your program before the program is compiled. Macros are typically used to define constants, create function-like constructs, and manage code that needs to be reused or customized for different environments or configurations.
+
+### Types of Macros in C:
+
+1. **Object-like Macros**: These are simple macros that replace a name with a constant value or expression. They're similar to constants but are handled by the preprocessor before compilation.
+
+   **Syntax**:
+   ```c
+   #define MACRO_NAME replacement_text
+   ```
+
+   **Example**:
+   ```c
+   #define PI 3.14159
+   ```
+   In this example, every occurrence of `PI` in the code will be replaced with `3.14159` during preprocessing. 
+
+   **Usage**:
+   ```c
+   float area = PI * radius * radius;  // Replaced by 3.14159 * radius * radius
+   ```
+
+2. **Function-like Macros**: These macros behave like functions but are expanded inline during preprocessing. They allow you to define reusable code without the overhead of a function call.
+
+   **Syntax**:
+   ```c
+   #define MACRO_NAME(parameter_list) expression
+   ```
+
+   **Example**:
+   ```c
+   #define SQUARE(x) ((x) * (x))
+   ```
+
+   Here, the macro `SQUARE(x)` takes an argument `x` and replaces it with `((x) * (x))`.
+
+   **Usage**:
+   ```c
+   int result = SQUARE(5);  // Replaced by ((5) * (5)) during preprocessing
+   ```
+   
+   **Note**: It's important to use parentheses around both the macro argument and the whole expression to ensure proper evaluation order and avoid bugs, especially when using operators.
+
+3. **Conditional Macros**: Macros can also be used with conditional compilation to include or exclude code based on specific conditions (e.g., operating system, debug mode).
+
+   **Syntax**:
+   ```c
+   #ifdef MACRO_NAME
+   // code to include if MACRO_NAME is defined
+   #else
+   // code to include if MACRO_NAME is not defined
+   #endif
+   ```
+
+   **Example**:
+   ```c
+   #define DEBUG
+
+   #ifdef DEBUG
+   printf("Debugging mode is enabled.\n");
+   #endif
+   ```
+
+   In this example, the code inside the `#ifdef` block will be included if `DEBUG` is defined, enabling debug-specific behavior.
+
+### Key Characteristics of Macros:
+
+1. **Preprocessor Substitution**: Macros are handled by the preprocessor before the actual compilation starts. The preprocessor simply replaces the macro name with its corresponding value or code snippet throughout the source code.
+
+2. **No Type Checking**: Macros do not have the type safety that functions have. For example, the macro `SQUARE(x)` will not check whether `x` is a number; it simply replaces `x` with `x * x`, which can lead to errors if the macro is used incorrectly.
+
+3. **Inline Substitution**: Function-like macros are expanded inline, meaning the code is inserted directly into the place where the macro is called. This can result in faster execution but might increase code size.
+
+4. **No Function Call Overhead**: Macros are expanded at compile time, so they don’t incur the overhead of a function call. This can be beneficial in performance-critical applications, but it also means you lose the benefits of function call abstraction and type checking.
+
+### Examples of Macro Usage:
+
+#### **Constant Macros**:
+```c
+#define MAX_SIZE 100
+int arr[MAX_SIZE];
+```
+
+#### **Function-like Macros**:
+```c
+#define ADD(x, y) ((x) + (y))
+int sum = ADD(5, 10);  // Replaced by ((5) + (10)), giving sum = 15
+```
+
+#### **Conditional Compilation Macros**:
+```c
+#define WINDOWS
+
+#ifdef WINDOWS
+    printf("Running on Windows\n");
+#else
+    printf("Running on another platform\n");
+#endif
+```
+
+#### **Debugging Macros**:
+```c
+#define DEBUG
+#ifdef DEBUG
+    printf("Debug mode enabled\n");
+#endif
+```
+
+### Advantages of Using Macros:
+- **Code Reusability**: Macros allow you to define common expressions or functionality and reuse them throughout the code without rewriting the same code multiple times.
+- **Performance**: Function-like macros can replace the need for a function call, reducing the overhead in performance-critical applications.
+- **Flexibility**: Macros allow conditional compilation, which can be useful in managing different configurations or platforms.
+
+### Disadvantages of Macros:
+- **No Type Safety**: Since macros are substituted by the preprocessor, they do not check types or provide error handling, which can lead to unexpected behavior or bugs if misused.
+- **Harder to Debug**: Since macros are expanded during preprocessing, debugging can be more difficult because you can’t step into a macro like a normal function.
+- **Code Bloat**: Overusing macros can lead to code duplication and larger executable sizes since each macro call is expanded inline.
+
