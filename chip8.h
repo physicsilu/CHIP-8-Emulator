@@ -4,6 +4,10 @@
 #define CHIP_8
 
 #include<stdint.h>
+#include<fstream>
+#include<stdio.h>
+#include<stdlib.h>
+#include<time.h>
 
 #define MEMORY_SIZE 4096
 #define NUM_REGISTERS 16
@@ -28,4 +32,6 @@ typedef struct
 
 void InitializeChip8(CHIP8* chip8);
 void LoadROM(CHIP8* chip8 ,const char* filename);
+void InitializeRNG();
+uint8_t GenerateRandomByte(uint8_t mask);
 #endif 

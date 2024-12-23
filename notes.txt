@@ -195,3 +195,14 @@ These characters are stored as sprites, where each sprite is a small bitmap repr
    *  -> 0001 -> 0x10
 ****  -> 1111 -> 0xF0
 
+*********************** Random Number Generator **********************
+In Chip-8, one of the instructions (Cxkk) is to place a random number ANDed with a value (kk) into a register.
+Example:
+C3FF: Place a random number between 0x00 and 0xFF into register V3.
+
+To emulate this functionality in software, we need a reliable way to generate random numbers, since we cannot rely on physical hardware randomness like noisy pins or dedicated RNG chips.
+
+C doesn’t have fancy random number generators like C++, but it provides basic tools:
+    rand(): Generates a random number.
+    srand(seed): Seeds the random number generator, so you get different results each time.
+

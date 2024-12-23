@@ -1,9 +1,5 @@
 // In this file the function definitions are included
 #include"chip8.h"
-#include<fstream>
-#include<stdio.h>
-#include<stdlib.h>
-
 
 const unsigned int START_ADDRESS = 0x200;
 const unsigned int FONTSET_START_ADDRESS = 0x50;
@@ -82,4 +78,14 @@ void LoadROM(CHIP8*chip8, const char* filename){
     }
     
     free(buffer); // very important step. never forget!
+}
+
+void InitializeRNG(){
+    srand((unsigned int)time(NULL)); // This ensures random numbers are different each time the program runs
+}
+
+//This function creates a random number between 0 and 255 and applies the mask (kk)
+uint8_t GenerateRandomByte(uint8_t mask){
+    uint8_t RandomValue = rand() % 256;
+    return RandomValue & mask;
 }
