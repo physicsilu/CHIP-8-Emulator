@@ -184,3 +184,14 @@ In the context of emulators like CHIP-8, ROM refers to a binary file that contai
         Historically, these programs were stored on physical ROM chips in devices like arcade machines, game consoles, or microcomputers.
         When these programs are dumped into files for use in an emulator, the files are still referred to as "ROMs" because they are essentially copies of the data that was originally in read-only memory.
 
+*********************** Loading Fonts **************************
+There are 16 characters and we need to load them to the memory.
+Font set in CHIP-8, which is a set of predefined characters that ROMs use to display text or graphical characters on the screen. 
+These characters are stored as sprites, where each sprite is a small bitmap representing a character in binary form.
+
+****  -> 1111 -> 0xF0
+*     -> 1000 -> 0x80
+****  -> 1111 -> 0xF0
+   *  -> 0001 -> 0x10
+****  -> 1111 -> 0xF0
+
