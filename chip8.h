@@ -24,6 +24,8 @@ typedef struct
     uint8_t SoundTimer;                                 // 8 bit sound timer
     uint8_t keypad[KEYPAD_SIZE];                        // 16 keys
     uint32_t display[DISPLAY_WIDTH*DISPLAY_HEIGHT];     // 64x32 display
-}CHIP8;
+} CHIP8;
 
+void InitializeChip8(CHIP8* chip8);
+void LoadROM(CHIP8* chip8 ,const char* filename);
 #endif 

@@ -171,3 +171,16 @@ int sum = ADD(5, 10);  // Replaced by ((5) + (10)), giving sum = 15
 - **Harder to Debug**: Since macros are expanded during preprocessing, debugging can be more difficult because you can’t step into a macro like a normal function.
 - **Code Bloat**: Overusing macros can lead to code duplication and larger executable sizes since each macro call is expanded inline.
 
+*********************** Loading program to memory ***************************
+In the CHIP-8 emulator, 0x000 to 0x1FF memory is reserved for the interpreter and other stuff.
+The actual program will be loaded from 0x200 to 0xFFF.
+These fellows have a very weird naming convention for the program. They call it ROM.
+
+In the context of emulators like CHIP-8, ROM refers to a binary file that contains the program or game to be executed by the emulator. Here's what it means here:
+    1. What is a ROM in Emulators?
+        A ROM is a digital representation of the program's instructions and data that would have originally been stored in the physical ROM of a device.
+        For CHIP-8, it is typically a small binary file containing machine instructions for the CHIP-8 virtual machine to execute.
+    2. Why is it Called a ROM?
+        Historically, these programs were stored on physical ROM chips in devices like arcade machines, game consoles, or microcomputers.
+        When these programs are dumped into files for use in an emulator, the files are still referred to as "ROMs" because they are essentially copies of the data that was originally in read-only memory.
+
