@@ -57,3 +57,140 @@ void OP_4xkk(CHIP8* chip8, uint16_t opcode){
         chip8->PC++;
     }
 }
+
+void OP_5xy0(CHIP8* chip8, uint16_t opcode){
+    uint8_t x = (0x0F00 & opcode) >> 8;
+    uint8_t y = (0x00F0 & opcode) >> 4;
+
+    if(chip8->registers[x] == chip8->registers[y]){
+        chip8->PC = chip8->PC + 2;
+    }else
+    {
+        chip8->PC++;
+    }
+}
+
+void OP_6xkk(CHIP8* chip8, uint16_t opcode){
+    uint8_t x = (0x0F00 & opcode) >> 8;
+    uint8_t kk = 0x00FF && opcode;
+
+    chip8->registers[x] = kk;
+}
+
+void OP_7xkk(CHIP8* chip8, uint16_t opcode){
+    uint8_t x = (0x0F00 & opcode) >> 8;
+    uint8_t kk = 0x00FF && opcode;
+
+    chip8->registers[x] = chip8->registers[x] + kk;
+}
+
+void OP_8xy0(CHIP8* chip8, uint16_t opcode){
+    uint8_t x = (0x0F00 & opcode) >> 8;
+    uint8_t y = (0x00F0 & opcode) >> 4;
+
+    chip8->registers[x] = chip8->registers[y];
+}
+
+void OP_8xy1(CHIP8* chip8, uint16_t opcode){
+    uint8_t x = (0x0F00 & opcode) >> 8;
+    uint8_t y = (0x00F0 & opcode) >> 4;
+
+    chip8->registers[x] = chip8->registers[x] | chip8->registers[y];
+}
+
+void OP_8xy2(CHIP8* chip8, uint16_t opcode){
+    uint8_t x = (0x0F00 & opcode) >> 8;
+    uint8_t y = (0x00F0 & opcode) >> 4;
+
+    chip8->registers[x] = chip8->registers[x] & chip8->registers[y];
+}
+
+void OP_8xy3(CHIP8* chip8, uint16_t opcode){
+    uint8_t x = (0x0F00 & opcode) >> 8;
+    uint8_t y = (0x00F0 & opcode) >> 4;
+
+    chip8->registers[x] = chip8->registers[x] ^ chip8->registers[y];
+}
+
+void OP_8xy4(CHIP8* chip8, uint16_t opcode){
+    uint8_t x = (0x0F00 & opcode) >> 8;
+    uint8_t y = (0x00F0 & opcode) >> 4;
+
+    uint16_t sum = chip8->registers[x] + chip8->registers[y];
+
+    if(sum > 255){
+        chip8->registers[0xF] = 1;
+    }
+    else
+    {
+        chip8->registers[0xF] = 0;
+    }
+
+    chip8->registers[x] = sum & 0xFF;
+}
+
+void OP_8xy5(CHIP8* chip8, uint16_t opcode){
+    uint8_t x = (0x0F00 & opcode) >> 8;
+    uint8_t y = (0x00F0 & opcode) >> 4;
+
+    if(chip8->registers[x] > chip8->registers[y]){
+        chip8->registers[0xF] = 1;
+    }
+    else{
+        chip8->registers[0xF] = 0;
+    }
+
+    chip8->registers[x] = chip8->registers[x] - chip8->registers[y];
+}
+
+void OP_8xy6(CHIP8* chip8, uint16_t opcode){
+    uint8_t x = (0x0F00 & opcode) >> 8;
+
+    if((chip8->registers[x] % 2) == 1){
+        chip8->registers[0xF] = 1;
+    }else{
+        chip8->registers[0xF] = 0;
+    }
+
+    chip8->registers[x] = chip8->registers[x]/2;
+}
+
+void OP_8xy7(CHIP8* chip8, uint16_t opcode){
+    uint8_t x = (0x0F00 & opcode) >> 8;
+    uint8_t y = (0x00F0 & opcode) >> 4;
+
+    if(chip8->registers[y] > chip8->registers[x]){
+        chip8->registers[0xF] = 1;
+    }
+    else{
+        chip8->registers[0xF] = 0;
+    }
+
+    chip8->registers[x] = chip8->registers[y] - chip8->registers[x];
+}
+
+void OP_8xyE(CHIP8* chip8, uint16_t opcode){
+    uint8_t x = (0x0F00 & opcode) >> 8;
+
+    if ((chip8->registers[x] & 128) == 0)
+    {
+        chip8->registers[0xF] = 0;
+    }
+    else{
+        chip8->registers[0xF] = 1;
+    }
+    
+    chip8->registers[x] = chip8->registers[x] * 2;
+}
+
+void OP_9xy0(CHIP8* chip8, uint16_t opcode){
+    uint8_t x = (0x0F00 & opcode) >> 8;
+    uint8_t y = (0x00F0 & opcode) >> 4;
+
+    if (chip8->registers[x] != chip8->registers[y])
+    {
+        chip8->PC = chip8->PC + 2;
+    }else{
+        chip8->PC++;
+    }
+}

@@ -27,7 +27,10 @@ void OP_Annn(CHIP8* chip8, uint16_t opcode); // LD I, addr - Set I = nnn. The va
 void OP_Bnnn(CHIP8* chip8, uint16_t opcode); // JP V0, addr - Jump to location nnn + V0. The program counter is set to nnn plus the value of V0.
 void OP_Cxkk(CHIP8* chip8, uint16_t opcode); // RND Vx, byte - Set Vx = random byte AND kk. The interpreter generates a random number from 0 to 255, which is then ANDed with the value kk. The results are stored in Vx.
 void OP_Dxyn(CHIP8* chip8, uint16_t opcode); // DRW Vx, Vy, nibble - Display n-byte sprite starting at memory location I at (Vx, Vy), set VF = collision. 
-                                             /*The interpreter reads n bytes from memory, starting at the address stored in I. These bytes are then displayed as sprites on screen at coordinates (Vx, Vy). Sprites are XORed onto the existing screen. If this causes any pixels to be erased, VF is set to 1, otherwise it is set to 0. If the sprite is positioned so part of it is outside the coordinates of the display, it wraps around to the opposite side of the screen.*/
+                                             /*The interpreter reads n bytes from memory, starting at the address stored in I. 
+                                             These bytes are then displayed as sprites on screen at coordinates (Vx, Vy). Sprites are XORed onto the existing screen. 
+                                             If this causes any pixels to be erased, VF is set to 1, otherwise it is set to 0. 
+                                             If the sprite is positioned so part of it is outside the coordinates of the display, it wraps around to the opposite side of the screen.*/
 void OP_Ex9E(CHIP8* chip8, uint16_t opcode); // SKP Vx - Skip next instruction if key with the value of Vx is pressed. Checks the keyboard, and if the key corresponding to the value of Vx is currently in the down position, PC is increased by 2.
 void OP_ExA1(CHIP8* chip8, uint16_t opcode); // SKNP Vx - Skip next instruction if key with the value of Vx is not pressed. Checks the keyboard, and if the key corresponding to the value of Vx is currently in the up position, PC is increased by 2.
 void OP_Fx07(CHIP8* chip8, uint16_t opcode); // LD Vx, DT - Set Vx = delay timer value. The value of DT is placed into Vx.
