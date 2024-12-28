@@ -194,3 +194,65 @@ void OP_9xy0(CHIP8* chip8, uint16_t opcode){
         chip8->PC++;
     }
 }
+
+void OP_Annn(CHIP8* chip8, uint16_t opcode){
+    uint16_t nnn = 0x0FFF & opcode;
+    chip8->IndexRegister = nnn;
+}
+
+void OP_Bnnn(CHIP8* chip8, uint16_t opcode){
+    uint16_t nnn = 0x0FFF & opcode;
+    uint16_t address = chip8->registers[0] + nnn;
+    chip8->PC = address;
+}
+
+void OP_Cxkk(CHIP8* chip8, uint16_t opcode){
+    uint8_t x = (0x0F00 & opcode) >> 8;
+    uint8_t kk = (0x00FF & opcode);
+
+    chip8->registers[x] = GenerateRandomByte(kk);
+}
+
+void OP_Fx07(CHIP8* chip8, uint16_t opcode){
+    uint8_t x = (0x0F00 & opcode) >> 8;
+
+    chip8->registers[x] = chip8->DelayTimer;
+}
+
+void OP_Fx15(CHIP8* chip8, uint16_t opcode){
+    uint8_t x = (0x0F00 & opcode) >> 8;
+
+    chip8->DelayTimer = chip8->registers[x];
+}
+
+void OP_Fx18(CHIP8* chip8, uint16_t opcode){
+    uint8_t x = (0x0F00 & opcode) >> 8;
+
+    chip8->SoundTimer = chip8->registers[x];
+}
+
+void OP_Fx1E(CHIP8* chip8, uint16_t opcode){
+    uint8_t x = (0x0F00 & opcode) >> 8;
+
+    chip8->IndexRegister = chip8->IndexRegister + chip8->registers[x];
+}
+
+void OP_Fx55(CHIP8* chip8, uint16_t opcode){
+    uint8_t x = (0x0F00 & opcode) >> 8;
+    uint16_t addr = chip8->IndexRegister;
+
+    for (uint8_t i = 0; i < x; i++)
+    {
+        chip8->memory[addr + i] = chip8->registers[i];
+    }
+}
+
+void OP_Fx65(CHIP8* chip8, uint16_t opcode){
+    uint8_t x = (0x0F00 & opcode) >> 8;
+    uint16_t addr = chip8->IndexRegister;
+
+    for (uint8_t i = 0; i < x; i++)
+    {
+        chip8->registers[i] = chip8->memory[addr + i];
+    }
+}
