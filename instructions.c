@@ -38,9 +38,6 @@ void OP_3xkk(CHIP8* chip8, uint16_t opcode){
     if (chip8->registers[x] == kk)
     {
         chip8->PC = chip8->PC + 2;
-    }else
-    {
-        chip8->PC++;
     }
 }
 
@@ -52,9 +49,6 @@ void OP_4xkk(CHIP8* chip8, uint16_t opcode){
     if (chip8->registers[x] != kk)
     {
         chip8->PC = chip8->PC + 2;
-    }else
-    {
-        chip8->PC++;
     }
 }
 
@@ -64,9 +58,6 @@ void OP_5xy0(CHIP8* chip8, uint16_t opcode){
 
     if(chip8->registers[x] == chip8->registers[y]){
         chip8->PC = chip8->PC + 2;
-    }else
-    {
-        chip8->PC++;
     }
 }
 
@@ -190,8 +181,6 @@ void OP_9xy0(CHIP8* chip8, uint16_t opcode){
     if (chip8->registers[x] != chip8->registers[y])
     {
         chip8->PC = chip8->PC + 2;
-    }else{
-        chip8->PC++;
     }
 }
 
@@ -211,6 +200,26 @@ void OP_Cxkk(CHIP8* chip8, uint16_t opcode){
     uint8_t kk = (0x00FF & opcode);
 
     chip8->registers[x] = GenerateRandomByte(kk);
+}
+
+void OP_Ex9E(CHIP8* chip8, uint16_t opcode){
+    uint8_t x = (0x0F00 & opcode) >> 8;
+    uint8_t key = chip8->registers[x];
+
+    if (chip8->keypad[key])
+    {
+        chip8->PC = chip8->PC + 2;
+    }
+}
+
+void OP_ExA1(CHIP8* chip8, uint16_t opcode){
+    uint8_t x = (0x0F00 & opcode) >> 8;
+    uint8_t key = chip8->registers[x];
+
+    if (!chip8->keypad[key])
+    {
+        chip8->PC = chip8->PC + 2;
+    }
 }
 
 void OP_Fx07(CHIP8* chip8, uint16_t opcode){
