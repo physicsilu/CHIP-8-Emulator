@@ -15,6 +15,9 @@
 #define DISPLAY_WIDTH 64
 #define DISPLAY_HEIGHT 32
 #define KEYPAD_SIZE 16
+const unsigned int START_ADDRESS = 0x200;
+const unsigned int FONTSET_START_ADDRESS = 0x50;
+const unsigned int FONTSET_SIZE = 80; // each character needs 5 bytes and there are 16 characters
 
 typedef struct
 {

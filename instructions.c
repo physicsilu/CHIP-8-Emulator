@@ -228,6 +228,62 @@ void OP_Fx07(CHIP8* chip8, uint16_t opcode){
     chip8->registers[x] = chip8->DelayTimer;
 }
 
+void OP_Fx0A(CHIP8* chip8, uint16_t opcode){
+    uint8_t x = (0x0F00 & opcode) >> 8;
+
+    if (chip8->keypad[0]){
+        chip8->registers[x] = 0;
+    }
+    else if (chip8->keypad[1]){
+        chip8->registers[x] = 1;
+    }
+    else if (chip8->keypad[2]){
+        chip8->registers[x] = 2;
+    }
+    else if (chip8->keypad[3]){
+        chip8->registers[x] = 3;
+    }
+    else if (chip8->keypad[4]){
+        chip8->registers[x] = 4;
+    }
+    else if (chip8->keypad[5]){
+        chip8->registers[x] = 5;
+    }
+    else if (chip8->keypad[6]){
+        chip8->registers[x] = 6;
+    }
+    else if (chip8->keypad[7]){
+        chip8->registers[x] = 7;
+    }
+    else if (chip8->keypad[8]){
+        chip8->registers[x] = 8;
+    }
+    else if (chip8->keypad[9]){
+        chip8->registers[x] = 9;
+    }
+    else if (chip8->keypad[10]){
+        chip8->registers[x] = 10;
+    }
+    else if (chip8->keypad[11]){
+        chip8->registers[x] = 11;
+    }
+    else if (chip8->keypad[12]){
+        chip8->registers[x] = 12;
+    }
+    else if (chip8->keypad[13]){
+        chip8->registers[x] = 13;
+    }
+    else if (chip8->keypad[14]){
+        chip8->registers[x] = 14;
+    }
+    else if (chip8->keypad[15]){
+        chip8->registers[x] = 15;
+    }
+    else{
+        chip8->PC = chip8->PC - 2;
+    }
+}
+
 void OP_Fx15(CHIP8* chip8, uint16_t opcode){
     uint8_t x = (0x0F00 & opcode) >> 8;
 
@@ -244,6 +300,27 @@ void OP_Fx1E(CHIP8* chip8, uint16_t opcode){
     uint8_t x = (0x0F00 & opcode) >> 8;
 
     chip8->IndexRegister = chip8->IndexRegister + chip8->registers[x];
+}
+
+void OP_Fx29(CHIP8* chip8, uint16_t opcode){
+    uint8_t x = (0x0F00 & opcode) >> 8;
+
+    uint8_t digit = chip8->registers[x];
+
+    chip8->IndexRegister = FONTSET_START_ADDRESS + (5 * digit); // Setting the address of the digit to index register
+}
+
+void OP_Fx33(CHIP8* chip8, uint16_t opcode){
+    uint8_t x = (0x0F00 & opcode) >> 8;
+    uint8_t num = chip8->registers[x];
+    uint16_t index = chip8->IndexRegister;
+
+    for (int i = 0; i < 3; i++)
+    {
+        uint8_t alpha = num%10;
+        chip8->memory[index + i] = alpha;
+        num = num/10;
+    }
 }
 
 void OP_Fx55(CHIP8* chip8, uint16_t opcode){
