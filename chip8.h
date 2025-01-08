@@ -49,4 +49,5 @@ void InitializeFunctionTable();
 void InitializeTable8();
 void InitializeTableE();
 void InitializeTableF();
+void Cycle(CHIP8* chip8);
 #endif 
