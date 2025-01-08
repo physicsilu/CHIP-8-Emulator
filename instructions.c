@@ -202,6 +202,42 @@ void OP_Cxkk(CHIP8* chip8, uint16_t opcode){
     chip8->registers[x] = GenerateRandomByte(kk);
 }
 
+void OP_Dxyn(CHIP8* chip8, uint16_t opcode){
+    // Extract Vx, Vy, and height (nibble)
+    uint8_t x = chip8->registers[(opcode & 0x0F00) >> 8];
+    uint8_t y = chip8->registers[(opcode & 0x00F0) >> 4];
+    uint8_t height = opcode & 0x000F;
+
+    // Reset collision flag (VF)
+    chip8->registers[0xF] = 0;
+
+    // Loop through the height of the sprite
+    for (uint8_t row = 0; row < height; ++row) {
+        uint8_t spriteByte = chip8->memory[chip8->IndexRegister + row]; // Fetch sprite row from memory
+
+        // Loop through each bit in the sprite byte
+        for (uint8_t col = 0; col < 8; ++col) {
+            // Calculate the x and y coordinates (with wrapping)
+            uint8_t pixelX = (x + col) % DISPLAY_WIDTH;
+            uint8_t pixelY = (y + row) % DISPLAY_HEIGHT;
+
+            // Determine the current bit of the sprite (1 or 0)
+            uint8_t spritePixel = (spriteByte >> (7 - col)) & 1;
+
+            // Pointer to the pixel in the display buffer
+            uint32_t* displayPixel = &chip8->display[pixelY * DISPLAY_WIDTH + pixelX];
+
+            // Collision detection
+            if (spritePixel && (*displayPixel & 1)) {
+                chip8->registers[0xF] = 1; // Collision occurred
+            }
+
+            // XOR the display pixel with the sprite pixel
+            *displayPixel ^= spritePixel;
+        }
+    }
+}
+
 void OP_Ex9E(CHIP8* chip8, uint16_t opcode){
     uint8_t x = (0x0F00 & opcode) >> 8;
     uint8_t key = chip8->registers[x];

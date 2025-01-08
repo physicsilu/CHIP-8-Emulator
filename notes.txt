@@ -206,3 +206,73 @@ C doesn’t have fancy random number generators like C++, but it provides basic 
     rand(): Generates a random number.
     srand(seed): Seeds the random number generator, so you get different results each time.
 
+*********************** Dxyn execution **********************
+/*
+==============================================
+         CHIP-8 Opcode DxyN Explanation
+==============================================
+
+Opcode: DxyN - Draw sprite at (Vx, Vy) with height N.
+------------------------------------------------------
+- x = Vx (X-coordinate)
+- y = Vy (Y-coordinate)
+- n = N (Sprite height)
+- VF is set to 1 if any pixels are erased (collision), otherwise 0.
+
+Screen:
+--------
+- Width: 64 pixels (0 to 63)
+- Height: 32 pixels (0 to 31)
+- Display memory: `uint32_t display[64 * 32]` (1 bit/pixel)
+
+Execution:
+-----------
+1. Fetch N bytes of sprite data starting at I.
+2. Iterate over each byte (0 to n-1):
+   - Compute screen row: `(Vy + i) % 32`.
+   - Read sprite byte.
+   - XOR each bit of the byte with the corresponding pixel on the screen.
+3. If XOR clears any pixels, set VF = 1; otherwise, set VF = 0.
+
+Example Opcode: D014
+----------------------
+- Opcode: D014 (Draw sprite at x=0, y=1, height=4)
+- V0 = 0, V1 = 1, n = 4.
+
+Font Data for Sprite '0':
+--------------------------
+0xF0, 0x90, 0x90, 0x90, 0xF0
+
+Binary Representation:
+------------------------
+Row 1: 11110000  -> ****....
+Row 2: 10010000  -> *..*....
+Row 3: 10010000  -> *..*....
+Row 4: 10010000  -> *..*....
+Row 5: 11110000  -> ****.... (Not drawn, as n=4).
+
+Screen Output:
+---------------
+Start drawing at (0, 1):
+    y = 1 -> ****....
+    y = 2 -> *..*....
+    y = 3 -> *..*....
+    y = 4 -> *..*....
+
+Edge Cases:
+------------
+1. Sprite goes off-screen horizontally:
+   - Wrap around to the opposite side of the screen (XOR from column 0).
+
+2. Sprite exceeds vertical bounds:
+   - Wrap around to the top of the screen (YOR to row 0).
+
+3. Collision detected:
+   - If any pixel transitions from 1 to 0, set VF = 1.
+
+Summary:
+---------
+- Opcode D014 draws a subset of the sprite '0' with height 4 rows.
+- No wrapping occurs since y=1 and n=4 are within bounds.
+- Only the top 4 rows of the sprite are drawn.
+*/
