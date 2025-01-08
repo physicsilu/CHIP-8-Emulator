@@ -1,5 +1,6 @@
 // In this file the function definitions are included
 #include"chip8.h"
+#include"instructions.h"
 
 uint8_t fontset[FONTSET_SIZE] =
 {
@@ -20,6 +21,57 @@ uint8_t fontset[FONTSET_SIZE] =
 	0xF0, 0x80, 0xF0, 0x80, 0xF0, // E
 	0xF0, 0x80, 0xF0, 0x80, 0x80  // F
 };
+
+void InitializeFunctionTable() {
+    functionTable[0x0] = OP_00E0; 
+    functionTable[0x1] = OP_1nnn;
+    functionTable[0x2] = OP_2nnn;
+    functionTable[0x3] = OP_3xkk;
+    functionTable[0x4] = OP_4xkk;
+    functionTable[0x5] = OP_5xy0;
+    functionTable[0x6] = OP_6xkk;
+    functionTable[0x7] = OP_7xkk;
+    functionTable[0x8] = NULL;   // Complex cases (e.g., 8xy0 to 8xyE) need additional logic
+    functionTable[0x9] = OP_9xy0;
+    functionTable[0xA] = OP_Annn;
+    functionTable[0xB] = OP_Bnnn;
+    functionTable[0xC] = OP_Cxkk;
+    functionTable[0xD] = OP_Dxyn;
+    functionTable[0xE] = NULL;   // Complex cases (e.g., Ex9E, ExA1) need additional logic
+    functionTable[0xF] = NULL;   // Complex cases (e.g., Fx07 to Fx65) need additional logic
+}
+
+void InitializeTable8() {
+    table8[0x0] = OP_8xy0;
+    table8[0x1] = OP_8xy1;
+    table8[0x2] = OP_8xy2;
+    table8[0x3] = OP_8xy3;
+    table8[0x4] = OP_8xy4;
+    table8[0x5] = OP_8xy5;
+    table8[0x6] = OP_8xy6;
+    table8[0x7] = OP_8xy7;
+    table8[0xE] = OP_8xyE;
+    // Other values remain NULL
+}
+
+void InitializeTableE(){
+    tableE[0x9E] = OP_Ex9E;
+    tableE[0xA1] = OP_ExA1;
+    // Other values remain NULL
+}
+
+void InitializeTableF(){
+    tableF[0x07] = OP_Fx07;
+    tableF[0x0A] = OP_Fx0A;
+    tableF[0x15] = OP_Fx15;
+    tableF[0x18] = OP_Fx18;
+    tableF[0x1E] = OP_Fx1E;
+    tableF[0x29] = OP_Fx29;
+    tableF[0x33] = OP_Fx33;
+    tableF[0x55] = OP_Fx55;
+    tableF[0x65] = OP_Fx65;
+    // Other values remain NULL
+}
 
 void InitializeChip8(CHIP8* chip8){
     chip8->PC = START_ADDRESS; // Initially the program counter points to 0x200

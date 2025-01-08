@@ -33,8 +33,20 @@ typedef struct
     uint32_t display[DISPLAY_WIDTH*DISPLAY_HEIGHT];     // 64x32 display
 } CHIP8;
 
+typedef void (*InstructionHandler)(CHIP8*, uint16_t); // Function Pointer
+
+// Declare the function pointer table
+InstructionHandler functionTable[0x10]; // 16 primary opcode groups (0x0 to 0xF)
+InstructionHandler table8[0x10]; // Subtable for 8xy_ instructions
+InstructionHandler tableE[0xFF]; // Subtable for Ex__ instructions
+InstructionHandler tableF[0xFF]; // Subtable for Fx__ instructions
+
 void InitializeChip8(CHIP8* chip8);
 void LoadROM(CHIP8* chip8 ,const char* filename);
 void InitializeRNG();
 uint8_t GenerateRandomByte(uint8_t mask);
+void InitializeFunctionTable();
+void InitializeTable8();
+void InitializeTableE();
+void InitializeTableF();
 #endif 

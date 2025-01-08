@@ -1,13 +1,13 @@
 #include "instructions.h"
 
-void OP_00E0(CHIP8* chip8){
+void OP_00E0(CHIP8* chip8, uint16_t opcode){
     for (int i = 0; i < DISPLAY_WIDTH*DISPLAY_HEIGHT; i++)
     {
         chip8->display[i] = 0;
     }
 }
 
-void OP_00EE(CHIP8* chip8){
+void OP_00EE(CHIP8* chip8, uint16_t opcode){
     if (chip8->stkptr > 0)
     {
         chip8->PC = chip8->stack[chip8->stkptr];
