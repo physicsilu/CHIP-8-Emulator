@@ -2,6 +2,11 @@
 #include"chip8.h"
 #include"instructions.h"
 
+InstructionHandler functionTable[0x10]; // Defining functionTable
+InstructionHandler table8[0x10];        // Defining table8
+InstructionHandler tableE[0xFF];        // Defining tableE
+InstructionHandler tableF[0xFF];        // Defining table
+
 uint8_t fontset[FONTSET_SIZE] =
 {
 	0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
@@ -91,6 +96,10 @@ void InitializeChip8(CHIP8* chip8){
         chip8->memory[FONTSET_START_ADDRESS + i] = fontset[i];
     }
     
+    InitializeFunctionTable();
+    InitializeTable8();
+    InitializeTableE();
+    InitializeTableF();
 }
 
 void LoadROM(CHIP8*chip8, const char* filename){
@@ -269,3 +278,127 @@ void UpdateDisplay(CHIP8* chip8, SDL_Renderer* renderer, SDL_Texture* texture) {
     SDL_RenderPresent(renderer);
 }
 
+bool ProcessInput(CHIP8* chip8) {
+    bool quit = false;
+    SDL_Event event;
+
+    while (SDL_PollEvent(&event)) {
+        switch (event.type) {
+        case SDL_QUIT:
+            quit = true; // This will trigger when the user closes the window
+            break;
+
+        case SDL_KEYDOWN:
+            if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
+                quit = true; // This will trigger when the user presses ESC
+            } else {
+                switch (event.key.keysym.scancode) {
+                    case SDL_SCANCODE_X:
+                        chip8->keypad[0] = 1;
+                        break;
+                    case SDL_SCANCODE_1:
+                        chip8->keypad[1] = 1;
+                        break;
+                    case SDL_SCANCODE_2:
+                        chip8->keypad[2] = 1;
+                        break;
+                    case SDL_SCANCODE_3:
+                        chip8->keypad[3] = 1;
+                        break;
+                    case SDL_SCANCODE_Q:
+                        chip8->keypad[4] = 1;
+                        break;
+                    case SDL_SCANCODE_W:
+                        chip8->keypad[5] = 1;
+                        break;
+                    case SDL_SCANCODE_E:
+                        chip8->keypad[6] = 1;
+                        break;
+                    case SDL_SCANCODE_A:
+                        chip8->keypad[7] = 1;
+                        break;
+                    case SDL_SCANCODE_S:
+                        chip8->keypad[8] = 1;
+                        break;
+                    case SDL_SCANCODE_D:
+                        chip8->keypad[9] = 1;
+                        break;
+                    case SDL_SCANCODE_Z:
+                        chip8->keypad[0xA] = 1;
+                        break;
+                    case SDL_SCANCODE_C:
+                        chip8->keypad[0xB] = 1;
+                        break;
+                    case SDL_SCANCODE_4:
+                        chip8->keypad[0xC] = 1;
+                        break;
+                    case SDL_SCANCODE_R:
+                        chip8->keypad[0xD] = 1;
+                        break;
+                    case SDL_SCANCODE_F:
+                        chip8->keypad[0xE] = 1;
+                        break;
+                    case SDL_SCANCODE_V:
+                        chip8->keypad[0xF] = 1;
+                        break;
+                }
+            }
+            break;
+
+        case SDL_KEYUP:
+            switch (event.key.keysym.scancode) {
+                case SDL_SCANCODE_X:
+                    chip8->keypad[0] = 0;
+                    break;
+                case SDL_SCANCODE_1:
+                    chip8->keypad[1] = 0;
+                    break;
+                case SDL_SCANCODE_2:
+                    chip8->keypad[2] = 0;
+                    break;
+                case SDL_SCANCODE_3:
+                    chip8->keypad[3] = 0;
+                    break;
+                case SDL_SCANCODE_Q:
+                    chip8->keypad[4] = 0;
+                    break;
+                case SDL_SCANCODE_W:
+                    chip8->keypad[5] = 0;
+                    break;
+                case SDL_SCANCODE_E:
+                    chip8->keypad[6] = 0;
+                    break;
+                case SDL_SCANCODE_A:
+                    chip8->keypad[7] = 0;
+                    break;
+                case SDL_SCANCODE_S:
+                    chip8->keypad[8] = 0;
+                    break;
+                case SDL_SCANCODE_D:
+                    chip8->keypad[9] = 0;
+                    break;
+                case SDL_SCANCODE_Z:
+                    chip8->keypad[0xA] = 0;
+                    break;
+                case SDL_SCANCODE_C:
+                    chip8->keypad[0xB] = 0;
+                    break;
+                case SDL_SCANCODE_4:
+                    chip8->keypad[0xC] = 0;
+                    break;
+                case SDL_SCANCODE_R:
+                    chip8->keypad[0xD] = 0;
+                    break;
+                case SDL_SCANCODE_F:
+                    chip8->keypad[0xE] = 0;
+                    break;
+                case SDL_SCANCODE_V:
+                    chip8->keypad[0xF] = 0;
+                    break;
+            }
+            break;
+        }
+    }
+
+    return quit;
+}

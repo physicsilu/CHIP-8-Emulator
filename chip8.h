@@ -8,6 +8,7 @@
 #include<stdlib.h>
 #include<time.h>
 #include<SDL2/SDL.h>
+#include<stdbool.h>
 
 #define MEMORY_SIZE 4096
 #define NUM_REGISTERS 16
@@ -15,9 +16,10 @@
 #define DISPLAY_WIDTH 64
 #define DISPLAY_HEIGHT 32
 #define KEYPAD_SIZE 16
-const unsigned int START_ADDRESS = 0x200;
-const unsigned int FONTSET_START_ADDRESS = 0x50;
-const unsigned int FONTSET_SIZE = 80; // each character needs 5 bytes and there are 16 characters
+#define FONTSET_SIZE 80
+#define START_ADDRESS 0x200
+#define FONTSET_START_ADDRESS 0x50
+
 
 typedef struct
 {
@@ -36,10 +38,10 @@ typedef struct
 typedef void (*InstructionHandler)(CHIP8*, uint16_t); // Function Pointer
 
 // Declare the function pointer table
-InstructionHandler functionTable[0x10]; // 16 primary opcode groups (0x0 to 0xF)
-InstructionHandler table8[0x10]; // Subtable for 8xy_ instructions
-InstructionHandler tableE[0xFF]; // Subtable for Ex__ instructions
-InstructionHandler tableF[0xFF]; // Subtable for Fx__ instructions
+extern InstructionHandler functionTable[0x10]; // 16 primary opcode groups (0x0 to 0xF)
+extern InstructionHandler table8[0x10]; // Subtable for 8xy_ instructions
+extern InstructionHandler tableE[0xFF]; // Subtable for Ex__ instructions
+extern InstructionHandler tableF[0xFF]; // Subtable for Fx__ instructions
 
 void InitializeChip8(CHIP8* chip8);
 void LoadROM(CHIP8* chip8 ,const char* filename);
@@ -52,4 +54,5 @@ void InitializeTableF();
 void Cycle(CHIP8* chip8);
 void InitializeSDL();
 void UpdateDisplay(CHIP8* chip8, SDL_Renderer* renderer, SDL_Texture* texture);
+bool ProcessInput(CHIP8* chip8);
 #endif 
