@@ -75,6 +75,15 @@ void InitializeTableF(){
 
 void InitializeChip8(CHIP8* chip8){
     chip8->PC = START_ADDRESS; // Initially the program counter points to 0x200
+    chip8->IndexRegister = 0;  // Initializing index register
+    chip8->stkptr = 0;         // Initializing stack pointer
+    chip8->DelayTimer = 0;     // Initializing delay timer
+    chip8->SoundTimer = 0;     // Initializing sound timer
+
+    // Initialize the display 
+    for (int i = 0; i < DISPLAY_WIDTH * DISPLAY_HEIGHT; i++) {
+        chip8->display[i] = 0;  // Turn all pixels off initially
+    }
 
     // Loading the fonts into memory
     for (int i = 0; i < FONTSET_SIZE; i++)
@@ -209,3 +218,54 @@ void Cycle(CHIP8* chip8){
         chip8->SoundTimer--;
     }
 }
+
+void InitializeSDL(){
+    if (SDL_Init(SDL_INIT_VIDEO) < 0)
+    {
+        printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
+        exit(1);
+    }
+    
+    // Create window
+    SDL_Window* window = SDL_CreateWindow("CHIP-8 Emulator", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, DISPLAY_WIDTH * 10, DISPLAY_HEIGHT * 10, SDL_WINDOW_SHOWN);
+    if (window == NULL) {
+        printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
+        exit(1);
+    }
+
+    // Create renderer
+    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    if (renderer == NULL) {
+        printf("Renderer could not be created! SDL_Error: %s\n", SDL_GetError());
+        exit(1);
+    }
+
+    // Create texture for displaying the screen
+    SDL_Texture* texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STATIC, DISPLAY_WIDTH, DISPLAY_HEIGHT);
+}
+
+void UpdateDisplay(CHIP8* chip8, SDL_Renderer* renderer, SDL_Texture* texture) {
+    uint32_t pixels[DISPLAY_WIDTH * DISPLAY_HEIGHT];
+    
+    // Convert CHIP8 display to SDL format
+    for (int i = 0; i < DISPLAY_WIDTH * DISPLAY_HEIGHT; i++) {
+        if (chip8->display[i] == 1) {
+            pixels[i] = 0xFFFFFF;  // White pixel
+        } else {
+            pixels[i] = 0x000000;  // Black pixel
+        }
+    }
+
+    // Update the texture with pixel data
+    SDL_UpdateTexture(texture, NULL, pixels, DISPLAY_WIDTH * sizeof(uint32_t));
+
+    // Clear the screen
+    SDL_RenderClear(renderer);
+
+    // Copy the texture to the screen
+    SDL_RenderCopy(renderer, texture, NULL, NULL);
+
+    // Present the rendered screen
+    SDL_RenderPresent(renderer);
+}
+

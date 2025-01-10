@@ -4,10 +4,10 @@
 #define CHIP_8
 
 #include<stdint.h>
-#include<fstream>
 #include<stdio.h>
 #include<stdlib.h>
 #include<time.h>
+#include<SDL2/SDL.h>
 
 #define MEMORY_SIZE 4096
 #define NUM_REGISTERS 16
@@ -50,4 +50,6 @@ void InitializeTable8();
 void InitializeTableE();
 void InitializeTableF();
 void Cycle(CHIP8* chip8);
+void InitializeSDL();
+void UpdateDisplay(CHIP8* chip8, SDL_Renderer* renderer, SDL_Texture* texture);
 #endif 

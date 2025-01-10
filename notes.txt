@@ -276,3 +276,6 @@ Summary:
 - No wrapping occurs since y=1 and n=4 are within bounds.
 - Only the top 4 rows of the sprite are drawn.
 */
+
+
+gcc -o chip8-emulator sdl.c $(sdl2-config --cflags --libs)
