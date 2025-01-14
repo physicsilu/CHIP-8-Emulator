@@ -278,4 +278,4 @@ Summary:
 */
 
 
-gcc -o chip8-emulator sdl.c $(sdl2-config --cflags --libs)
+$ gcc -o chip8-emulator main.c chip8.c instructions.c  $(sdl2-config --cflags --libs)

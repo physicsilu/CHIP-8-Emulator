@@ -78,43 +78,28 @@ int main(int argc, char* argv[])
     int cycleDelay = 8;
     const char* romFilename = "Tetris.ch8";
 
-    // Initialize SDL
-    if (SDL_Init(SDL_INIT_VIDEO) != 0)
+    if (SDL_Init(SDL_INIT_VIDEO) < 0)
     {
-        fprintf(stderr, "SDL Initialization Error: %s\n", SDL_GetError());
-        exit(EXIT_FAILURE);
+        printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
+        exit(1);
+    }
+    
+    // Create window
+    SDL_Window* window = SDL_CreateWindow("CHIP-8 Emulator", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, DISPLAY_WIDTH * 10, DISPLAY_HEIGHT * 10, SDL_WINDOW_SHOWN);
+    if (window == NULL) {
+        printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
+        exit(1);
     }
 
-    // Create SDL window
-    SDL_Window* window = SDL_CreateWindow("CHIP-8 Emulator", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, DISPLAY_WIDTH * videoScale, DISPLAY_HEIGHT * videoScale, SDL_WINDOW_SHOWN);
-    if (!window)
-    {
-        fprintf(stderr, "Window Creation Error: %s\n", SDL_GetError());
-        SDL_Quit();
-        exit(EXIT_FAILURE);
-    }
-
-    // Create SDL renderer
+    // Create renderer
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    if (!renderer)
-    {
-        fprintf(stderr, "Renderer Creation Error: %s\n", SDL_GetError());
-        SDL_DestroyWindow(window);
-        SDL_Quit();
-        exit(EXIT_FAILURE);
+    if (renderer == NULL) {
+        printf("Renderer could not be created! SDL_Error: %s\n", SDL_GetError());
+        exit(1);
     }
 
-    // Create SDL texture for video
+    // Create texture for displaying the screen
     SDL_Texture* texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STATIC, DISPLAY_WIDTH, DISPLAY_HEIGHT);
-    if (!texture)
-    {
-        fprintf(stderr, "Texture Creation Error: %s\n", SDL_GetError());
-        SDL_DestroyRenderer(renderer);
-        SDL_DestroyWindow(window);
-        SDL_Quit();
-        exit(EXIT_FAILURE);
-    }
-
     // Initialize CHIP-8 and load the ROM
     CHIP8 chip8;
     InitializeChip8(&chip8);  // Make sure this function initializes your CHIP-8 structure

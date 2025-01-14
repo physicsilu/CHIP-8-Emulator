@@ -161,14 +161,16 @@ void Cycle(CHIP8* chip8){
     // Fetch
     uint16_t opcode = ((chip8->memory[chip8->PC]) << 8) | (chip8->memory[chip8->PC + 1]); // 16 bit opcode right, so two bytes
 
-    // Incrementing PC
-    chip8->PC = chip8->PC + 2;
+    
 
     // Execute
     uint8_t category = (opcode & 0xF000) >> 12; // First Nibble
 
     if (functionTable[category] != NULL){
         functionTable[category](chip8, opcode);
+
+        // Incrementing PC
+        chip8->PC = chip8->PC + 2;
     }
     else{
         // Handling special cases
@@ -179,9 +181,14 @@ void Cycle(CHIP8* chip8){
             uint8_t subcode = opcode & 0x000F; // Last nibble
             if (table8[subcode] != NULL){
                 table8[subcode](chip8, opcode);
+
+                // Incrementing PC
+                chip8->PC = chip8->PC + 2;
             }
             else{
                 printf("Unknown instruction: 0x%04X\n", opcode);
+                // Incrementing PC
+                chip8->PC = chip8->PC + 2;
             }
             
             break;
@@ -191,8 +198,13 @@ void Cycle(CHIP8* chip8){
             uint8_t subcode = opcode & 0x00FF; // Last 8 bits
             if (tableE[subcode] != NULL){
                 tableE[subcode](chip8, opcode);
+
+                // Incrementing PC
+                chip8->PC = chip8->PC + 2;  
             }else{
                 printf("Unknown instruction: 0x%04X\n", opcode);
+                // Incrementing PC
+                chip8->PC = chip8->PC + 2;
             }
             
             break;
@@ -202,15 +214,22 @@ void Cycle(CHIP8* chip8){
             uint8_t subcode = opcode & 0x00FF; // Last 8 bits
             if (tableF[subcode] != NULL){
                 tableF[subcode](chip8, opcode);
+                // Incrementing PC
+                chip8->PC = chip8->PC + 2;
             }else{
                 printf("Unknown instruction: 0x%04X\n", opcode);
+                // Incrementing PC
+                chip8->PC = chip8->PC + 2;
             }
             
             break;
         }
 
-        default:
+        default:{
             printf("Unknown instruction: 0x%04X\n", opcode);
+            // Incrementing PC
+            chip8->PC = chip8->PC + 2;
+        }
             break;
         }
     }
