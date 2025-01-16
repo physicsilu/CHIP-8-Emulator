@@ -20,9 +20,9 @@ void OP_00E0(CHIP8* chip8, uint16_t opcode){
 void OP_00EE(CHIP8* chip8, uint16_t opcode){
     LOG("Executing 00EE: Return from subroutine\n");
     if (chip8->stkptr > 0)
-    {
-        chip8->PC = chip8->stack[chip8->stkptr];
+    {   
         chip8->stkptr = chip8->stkptr - 1;
+        chip8->PC = chip8->stack[chip8->stkptr];
     }
 }
 
