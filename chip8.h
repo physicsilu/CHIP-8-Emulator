@@ -22,7 +22,6 @@
 void InitializeChip8();
 void LoadGame(char* game);
 void EmulateCycle();
-void SetKeys();
 void Tick();
 
 #endif 

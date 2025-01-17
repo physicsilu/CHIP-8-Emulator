@@ -278,4 +278,83 @@ Summary:
 */
 
 
-$ gcc -o chip8-emulator main.c chip8.c instructions.c  $(sdl2-config --cflags --libs)
+$ gcc -o chip8-emulator main.c chip8.c instructions.c  $(sdl2-config --cflags --libs) -> for compilation
+
+************************** What is struct timeval? ************************
+- struct timeval is a structure defined in the <sys/time.h> header file on Unix-like systems.
+- It is used to represent a specific point in time with microsecond precision.
+
+************************** What does glClear() do? ************************
+glClear is an OpenGL function used to clear one or more of the buffers 
+(such as the color buffer, depth buffer, or stencil buffer) to specific values.
+
+Common Buffers That Can Be Cleared:
+
+- Color Buffer (GL_COLOR_BUFFER_BIT):
+
+Purpose: Clears the color buffer, which holds the pixel color data that will be displayed on the screen.
+Typical Usage: Clearing the color buffer to a specific color (often black or another background color) ensures that no leftover data from previous frames affects the current one.
+
+- Depth Buffer (GL_DEPTH_BUFFER_BIT):
+
+Purpose: Clears the depth buffer, which stores information about the depth (or distance) of pixels in a 3D scene.
+Typical Usage: In 3D rendering, this is used to ensure that depth calculations are reset for each frame, allowing for proper visibility of objects based on their distances from the camera.
+
+- Stencil Buffer (GL_STENCIL_BUFFER_BIT):
+
+Purpose: Clears the stencil buffer, which is used for advanced rendering techniques, such as stencil testing.
+Typical Usage: Often used in effects like masking or shadow volumes, it ensures that the stencil values are reset at the beginning of each frame.
+
+- Accumulation Buffer (GL_ACCUM_BUFFER_BIT):
+
+Purpose: Clears the accumulation buffer, which is used in advanced rendering techniques like anti-aliasing or image compositing.
+
+************************** Why use (void) x and (void) y in keypress? ************************
+In C, when you define a function with parameters, but some of those parameters aren't used within the function, compilers may issue warnings about unused parameters.
+
+The (void) is a way to explicitly indicate to the compiler that we are intentionally not using these parameters. 
+It prevents the compiler from issuing a warning about the unused parameters x and y. 
+
+Here's what it means:
+
+(void) x; and (void) y; tell the compiler that the x and y parameters (which represent mouse coordinates) are intentionally ignored.
+It helps maintain clean code without unnecessary compiler warnings about unused variables.
+
+************************** What does glDrawPixels() do? ************************
+This function call is responsible for drawing a block of pixels on the screen, based on the pixel data that is passed to it.
+
+************************** What does glutSwapBuffers() do? ************************
+Buffering in OpenGL: OpenGL uses double buffering by default. This means that there are two buffers:
+
+- Front buffer: This is the buffer currently being displayed on the screen.
+- Back buffer: This is where OpenGL draws the next frame (or the next set of pixels).
+
+- This function swaps the contents of the front and back buffers. 
+- In other words, it makes the back buffer the front buffer, which means the newly drawn image (from the glDrawPixels call) will be displayed on the screen.
+
+************************** What does reshape_window() do? ************************
+The reshape_window function in this context is a callback function that gets called whenever the window is resized. 
+It receives two parameters:
+
+- w: The new width of the window.
+- h: The new height of the window.
+
+In this specific implementation, the parameters w and h are not used, as indicated by the line (void) w; (void) h;.
+
+**********************glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);*****************
+This initializes the display mode for the window. 
+GLUT_DOUBLE specifies that double buffering should be used, meaning that OpenGL will render to an off-screen buffer first, then swap it to the screen to prevent flickering. 
+GLUT_RGBA indicates that the window will use RGBA color mode (Red, Green, Blue, Alpha for transparency).
+
+**********************glutDisplayFunc(draw);*****************
+This registers the function draw() as the callback function to be called whenever the window needs to be redrawn (e.g., after the contents are updated). 
+The draw() function handles the rendering of the Chip-8 screen.
+
+**********************glutIdleFunc(loop);*****************
+This sets the loop() function to be called whenever the application is idle, i.e., when no other events are occurring (like drawing or user input). 
+In this function, the emulator's state is updated and graphics are drawn.
+
+**********************glutMainLoop();*****************
+This function starts the GLUT event loop. 
+After this call, the program enters an infinite loop where it listens for events (such as window events, keyboard input, etc.), and it continuously calls the appropriate callback functions (like draw(), loop(), etc.). 
+The loop will continue running until the window is closed.
